@@ -24,6 +24,8 @@ import {
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
 
+import commonStyles from './src/commonStyle';;
+
 const App: () => React$Node = () => {
   return (
     <>
@@ -82,6 +84,7 @@ const styles = StyleSheet.create({
   },
   body: {
     backgroundColor: Colors.white,
+    fontFamily: commonStyles.fontFamily,
   },
   sectionContainer: {
     marginTop: 32,
