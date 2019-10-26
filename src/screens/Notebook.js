@@ -8,7 +8,7 @@ import Task from '../components/Task';
 
 export default class Notebook extends Component {
 	state = {
-		task: [
+		tasks: [
 			{
 				id: Math.random(),
 				desc: 'Aprender React-Native',
@@ -70,7 +70,19 @@ export default class Notebook extends Component {
 				doneAt: null
 			}
 		]
-	};
+  };
+  
+  toggleItem = id =>{
+    let tasks = this.state.tasks.map(task=>{
+       if(task.id==id){
+         task ={...task}
+         task.doneAt = task.doneAt ? null : new Date()
+       }
+       return task
+    })
+
+    this.setState({tasks})
+  }
 
 	render() {
 		return (
@@ -83,9 +95,9 @@ export default class Notebook extends Component {
 				</ImageBackground>
 				<View style={styles.taskContainer}>
 					<FlatList
-						data={this.state.task}
+						data={this.state.tasks}
 						keyExtractor={(item) => `${item.id}`}
-						renderItem={({ item }) => <Task {...item} />}
+						renderItem={({ item }) => <Task {...item} toggleItem={this.toggleItem}/>}
 					/>
 				</View>
 			</View>

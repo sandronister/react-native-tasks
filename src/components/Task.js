@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Text, TouchableWithoutFeedback } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import moment from 'moment';
 import 'moment/locale/pt-br';
@@ -11,7 +11,7 @@ export default (props) => {
 	if (props.doneAt != null) {
 		check = (
 			<View style={styles.done}>
-				<Icon name='check' size={20} color={commonStyles.colors.secondary} />
+				<Icon name="check" size={20} color={commonStyles.colors.secondary} />
 			</View>
 		);
 	} else {
@@ -22,14 +22,12 @@ export default (props) => {
 
 	return (
 		<View style={styles.container}>
-			<View style={styles.checkContainer}>{check}</View>
+			<TouchableWithoutFeedback onPress={()=>props.toggleItem(props.id)}>
+				<View style={styles.checkContainer}>{check}</View>
+			</TouchableWithoutFeedback>
 			<View>
-                <Text style={[ styles.description, descStyle ]}>
-                    {props.desc}
-                </Text>
-                <Text style={styles.date}>
-                    {moment(props.estimateAt).locale('pt-br').format('dddd, D [de] MMMM')}
-                </Text>
+				<Text style={[ styles.description, descStyle ]}>{props.desc}</Text>
+				<Text style={styles.date}>{moment(props.estimateAt).locale('pt-br').format('dddd, D [de] MMMM')}</Text>
 			</View>
 		</View>
 	);
