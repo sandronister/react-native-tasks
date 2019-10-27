@@ -2,11 +2,13 @@ import React, { Component } from 'react';
 import { View, Text, StyleSheet, ImageBackground, FlatList, TouchableOpacity, Platform } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
+import ActionButton from 'react-native-action-button'
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import todayImage from '../../assets/imgs/today.jpg';
 import commonStyles from '../commonStyle';
 import Task from '../components/Task';
+import AddTasks from './AddTasks'
 
 export default class Notebook extends Component {
 	state = {
@@ -73,8 +75,22 @@ export default class Notebook extends Component {
 			}
 		],
 		visibleTasks: [],
-		showDoneTasks: true
-	};
+		showDoneTasks: true, 
+		showAddTask:false
+	}
+
+	AddTasks = task=>{
+		let tasks = [...this.state.tasks]
+		
+		tasks.push({
+			id:Math.random(), 
+			desc:task.desc,
+			estimateAt:task.estimateAt,
+			doneAt:null
+		})
+
+		this.setState({tasks,showAddTask:false},this.filterTasks)
+	}
 
 	filterTasks = (_) => {
 		let visibleTasks = [];
@@ -115,6 +131,11 @@ export default class Notebook extends Component {
 	render() {
 		return (
 			<View style={styles.container}>
+				
+				<AddTasks isVisible={this.state.showAddTask} 
+						onSave={this.AddTasks}
+						onCancel={()=>this.setState({showAddTask:false})}/>
+
 				<ImageBackground source={todayImage} style={styles.background}>
 					<View style={styles.iconBar}>
 						<TouchableOpacity onPress={this.toggleTasks}>
@@ -126,6 +147,7 @@ export default class Notebook extends Component {
 						<Text style={styles.subtitle}>{moment().locale('pt-br').format('ddd, D [de] MMMM')}</Text>
 					</View>
 				</ImageBackground>
+				
 				<View style={styles.taskContainer}>
 					<FlatList
 						data={this.state.visibleTasks}
@@ -133,6 +155,9 @@ export default class Notebook extends Component {
 						renderItem={({ item }) => <Task {...item} toggleItem={this.toggleItem} />}
 					/>
 				</View>
+
+				<ActionButton buttonColor={commonStyles.colors.today}
+					onPress={()=>this.setState({showAddTask:true})} />
 			</View>
 		);
 	}
