@@ -1,101 +1,49 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ImageBackground, FlatList, TouchableOpacity, Platform } from 'react-native';
+import {
+	View,
+	Text,
+	StyleSheet,
+	ImageBackground,
+	FlatList,
+	TouchableOpacity,
+	Platform,
+	AsyncStorage
+} from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
-import ActionButton from 'react-native-action-button'
+import ActionButton from 'react-native-action-button';
 import moment from 'moment';
 import 'moment/locale/pt-br';
 import todayImage from '../../assets/imgs/today.jpg';
 import commonStyles from '../commonStyle';
 import Task from '../components/Task';
-import AddTasks from './AddTasks'
+import AddTasks from './AddTasks';
 
 export default class Notebook extends Component {
 	state = {
-		tasks: [
-			{
-				id: Math.random(),
-				desc: 'Aprender React-Native',
-				estimateAt: new Date(),
-				doneAt: new Date()
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender Amazon Lambda',
-				estimateAt: new Date(),
-				doneAt: null
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender React-Native',
-				estimateAt: new Date(),
-				doneAt: new Date()
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender Amazon Lambda',
-				estimateAt: new Date(),
-				doneAt: null
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender React-Native',
-				estimateAt: new Date(),
-				doneAt: new Date()
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender Amazon Lambda',
-				estimateAt: new Date(),
-				doneAt: null
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender React-Native',
-				estimateAt: new Date(),
-				doneAt: new Date()
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender Amazon Lambda',
-				estimateAt: new Date(),
-				doneAt: null
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender React-Native',
-				estimateAt: new Date(),
-				doneAt: new Date()
-			},
-			{
-				id: Math.random(),
-				desc: 'Aprender Amazon Lambda',
-				estimateAt: new Date(),
-				doneAt: null
-			}
-		],
+		tasks: [],
 		visibleTasks: [],
-		showDoneTasks: true, 
-		showAddTask:false
-	}
+		showDoneTasks: true,
+		showAddTask: false
+	};
 
-	AddTasks = task=>{
-		let tasks = [...this.state.tasks]
-		
+	AddTasks = (task) => {
+		let tasks = [ ...this.state.tasks ];
+
 		tasks.push({
-			id:Math.random(), 
-			desc:task.desc,
-			estimateAt:task.estimateAt,
-			doneAt:null
-		})
+			id: Math.random(),
+			desc: task.desc,
+			estimateAt: task.estimateAt,
+			doneAt: null
+		});
 
-		this.setState({tasks,showAddTask:false},this.filterTasks)
-	}
+		this.setState({ tasks, showAddTask: false }, this.filterTasks);
+	};
 
-	delete = id =>{
-		const tasks = this.state.tasks.filter(task => task.id != id)
-		this.setState({tasks},this.filterTasks)
-	}
+	delete = (id) => {
+		const tasks = this.state.tasks.filter((task) => task.id != id);
+		this.setState({ tasks }, this.filterTasks);
+	};
 
 	filterTasks = (_) => {
 		let visibleTasks = [];
@@ -111,14 +59,17 @@ export default class Notebook extends Component {
 		}
 
 		this.setState({ visibleTasks });
+		AsyncStorage.setItem('tasks',JSON.stringify(this.state.tasks))
 	};
 
-	toggleTasks = _ => {
+	toggleTasks = () => {
 		this.setState({ showDoneTasks: !this.state.showDoneTasks }, this.filterTasks);
 	};
 
-	componentDidMount = _ => {
-		this.filterTasks();
+	componentDidMount = async () => {
+		const data = await AsyncStorage.getItem('tasks')
+		const tasks = JSON.parse(data) || []
+		this.setState({tasks},this.filterTasks)
 	};
 
 	toggleItem = (id) => {
@@ -136,15 +87,20 @@ export default class Notebook extends Component {
 	render() {
 		return (
 			<View style={styles.container}>
-				
-				<AddTasks isVisible={this.state.showAddTask} 
-						onSave={this.AddTasks}
-						onCancel={()=>this.setState({showAddTask:false})}/>
+				<AddTasks
+					isVisible={this.state.showAddTask}
+					onSave={this.AddTasks}
+					onCancel={() => this.setState({ showAddTask: false })}
+				/>
 
 				<ImageBackground source={todayImage} style={styles.background}>
 					<View style={styles.iconBar}>
 						<TouchableOpacity onPress={this.toggleTasks}>
-							<Icon name={this.state.showDoneTasks ? 'eye' : 'eye-slash'} size={20} color={commonStyles.colors.secondary} />
+							<Icon
+								name={this.state.showDoneTasks ? 'eye' : 'eye-slash'}
+								size={20}
+								color={commonStyles.colors.secondary}
+							/>
 						</TouchableOpacity>
 					</View>
 					<View style={styles.titleBar}>
@@ -152,17 +108,21 @@ export default class Notebook extends Component {
 						<Text style={styles.subtitle}>{moment().locale('pt-br').format('ddd, D [de] MMMM')}</Text>
 					</View>
 				</ImageBackground>
-				
+
 				<View style={styles.taskContainer}>
 					<FlatList
 						data={this.state.visibleTasks}
 						keyExtractor={(item) => `${item.id}`}
-						renderItem={({ item }) => <Task {...item} toggleItem={this.toggleItem} OnDelete={this.delete} />}
+						renderItem={({ item }) => (
+							<Task {...item} toggleItem={this.toggleItem} OnDelete={this.delete} />
+						)}
 					/>
 				</View>
 
-				<ActionButton buttonColor={commonStyles.colors.today}
-					onPress={()=>this.setState({showAddTask:true})} />
+				<ActionButton
+					buttonColor={commonStyles.colors.today}
+					onPress={() => this.setState({ showAddTask: true })}
+				/>
 			</View>
 		);
 	}
@@ -195,11 +155,11 @@ const styles = StyleSheet.create({
 	},
 	taskContainer: {
 		flex: 7
-	}, 
-	iconBar:{
-		marginTop:Platform.OS=='ios'?30:10,
-		marginHorizontal:20, 
-		flexDirection:'row', 
-		justifyContent:'flex-end'
+	},
+	iconBar: {
+		marginTop: Platform.OS == 'ios' ? 30 : 10,
+		marginHorizontal: 20,
+		flexDirection: 'row',
+		justifyContent: 'flex-end'
 	}
 });

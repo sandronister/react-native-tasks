@@ -10,7 +10,8 @@ import {
     TouchableOpacity, 
     Alert,
     Platform, 
-    DatePickerAndroid
+    DatePickerAndroid, 
+
 } from 'react-native';
 import moment from 'moment';
 import commonStyles from '../commonStyle';
@@ -37,13 +38,13 @@ export default class AddTask extends Component {
             date:this.state.date
         })
         .then(e=>{
-            if(e.action==DatePickerAndroid.dismissedAction){
+            if(e.action!=DatePickerAndroid.dismissedAction){
                 const momentDate = moment(this.state.date)
                 momentDate.date(e.day)
                 momentDate.month(e.month)
                 momentDate.year(e.year)
 
-                this.setState({date:momentDate.toDate()})
+                this.setState({estimateAt:momentDate.toDate()})
             }
         })
     }
@@ -58,7 +59,7 @@ export default class AddTask extends Component {
             datePicker = (
                 <TouchableOpacity onPress={this.handleDatePickerAndroid}>
                     <Text style={styles.date}>
-                        {moment(this.state.date).format('ddd, DD [de] MMMM [de] YYYY')}
+                        {moment(this.state.estimateAt).format('ddd, DD [de] MMMM [de] YYYY')}
                     </Text>
                 </TouchableOpacity>
             )
