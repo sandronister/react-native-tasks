@@ -92,6 +92,11 @@ export default class Notebook extends Component {
 		this.setState({tasks,showAddTask:false},this.filterTasks)
 	}
 
+	delete = id =>{
+		const tasks = this.state.tasks.filter(task => task.id != id)
+		this.setState({tasks},this.filterTasks)
+	}
+
 	filterTasks = (_) => {
 		let visibleTasks = [];
 
@@ -152,7 +157,7 @@ export default class Notebook extends Component {
 					<FlatList
 						data={this.state.visibleTasks}
 						keyExtractor={(item) => `${item.id}`}
-						renderItem={({ item }) => <Task {...item} toggleItem={this.toggleItem} />}
+						renderItem={({ item }) => <Task {...item} toggleItem={this.toggleItem} OnDelete={this.delete} />}
 					/>
 				</View>
 
